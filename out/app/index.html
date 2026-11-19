@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neon Coast Cover Studio</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div class="shell">
+  <header class="masthead">
+    <div>
+      <h1>Neon Coast Cover Studio</h1>
+      <p class="tagline">Your photos, a sunset grade, and a poster worth sharing. Everything runs on your machine — nothing is uploaded.</p>
+    </div>
+    <div class="badge" aria-hidden="true">LEONIDA&nbsp;•&nbsp;EST.&nbsp;2026</div>
+  </header>
+
+  <div class="workbench">
+    <aside class="panel" aria-label="Cover controls">
+      <section class="group">
+        <h2>1 · Photos</h2>
+        <p class="hint">Pick a photo for each panel, or use a sample. Drag the cover to move a photo; scroll over it to zoom.</p>
+        <div class="slots" id="slots"></div>
+      </section>
+
+      <section class="group">
+        <h2>2 · Words</h2>
+        <label class="field">Caption
+          <input id="caption" type="text" maxlength="32" value="PIER PRESSURE" autocomplete="off">
+        </label>
+        <label class="field">Subtitle
+          <input id="subtitle" type="text" maxlength="48" value="golden hour heist" autocomplete="off">
+        </label>
+      </section>
+
+      <section class="group">
+        <h2>3 · Layout</h2>
+        <div class="choices" id="layouts">
+          <button type="button" data-layout="hero" class="choice active">Hero &amp; three</button>
+          <button type="button" data-layout="grid4" class="choice">Four panels</button>
+          <button type="button" data-layout="fullbleed" class="choice">Full bleed</button>
+          <button type="button" data-layout="tilted" class="choice">Tilted snaps</button>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>4 · Colour grade</h2>
+        <div class="choices" id="grades">
+          <button type="button" data-grade="sunset" class="choice active">Sunset</button>
+          <button type="button" data-grade="neon" class="choice">Neon nights</button>
+          <button type="button" data-grade="vice" class="choice">Vice pink</button>
+          <button type="button" data-grade="midnight" class="choice">Midnight</button>
+        </div>
+        <div class="toggles">
+          <label><input id="fx-grain" type="checkbox" checked> Film grain</label>
+          <label><input id="fx-halftone" type="checkbox" checked> Halftone band</label>
+          <label><input id="fx-vignette" type="checkbox" checked> Vignette</label>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>5 · Export</h2>
+        <div class="choices" id="sizes">
+          <button type="button" data-size="1080x1080" class="choice active">1080 × 1080</button>
+          <button type="button" data-size="1080x1350" class="choice">1080 × 1350</button>
+          <button type="button" data-size="1920x1080" class="choice">1920 × 1080</button>
+        </div>
+        <div class="actions">
+          <button id="export" type="button" class="primary">Export PNG</button>
+          <button id="undo" type="button">Undo</button>
+          <button id="redo" type="button">Redo</button>
+        </div>
+        <p id="status" class="status" role="status"></p>
+      </section>
+    </aside>
+
+    <main class="stage-wrap">
+      <canvas id="stage" width="1080" height="1080" aria-label="The cover preview"></canvas>
+      <p class="stage-note">Live preview — click a panel to select it, drag to reposition its photo, scroll to zoom.</p>
+    </main>
+  </div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

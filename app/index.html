@@ -3,106 +3,85 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Neon Coast Cover Studio — GTA-style cover art maker</title>
+<title>Neon Coast Cover Studio</title>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-<header class="topbar">
-  <div class="brand">
-    <span class="brand-mark" aria-hidden="true">NC</span>
+<div class="shell">
+  <header class="masthead">
     <div>
       <h1>Neon Coast Cover Studio</h1>
-      <p>Turn your photo + caption into Vice City sunset cover art. Offline — photos never leave this machine.</p>
+      <p class="tagline">Your photos, a sunset grade, and a poster worth sharing. Everything runs on your machine — nothing is uploaded.</p>
     </div>
+    <div class="badge" aria-hidden="true">LEONIDA&nbsp;•&nbsp;EST.&nbsp;2026</div>
+  </header>
+
+  <div class="workbench">
+    <aside class="panel" aria-label="Cover controls">
+      <section class="group">
+        <h2>1 · Photos</h2>
+        <p class="hint">Pick a photo for each panel, or use a sample. Drag the cover to move a photo; scroll over it to zoom.</p>
+        <div class="slots" id="slots"></div>
+      </section>
+
+      <section class="group">
+        <h2>2 · Words</h2>
+        <label class="field">Caption
+          <input id="caption" type="text" maxlength="32" value="PIER PRESSURE" autocomplete="off">
+        </label>
+        <label class="field">Subtitle
+          <input id="subtitle" type="text" maxlength="48" value="golden hour heist" autocomplete="off">
+        </label>
+      </section>
+
+      <section class="group">
+        <h2>3 · Layout</h2>
+        <div class="choices" id="layouts">
+          <button type="button" data-layout="hero" class="choice active">Hero &amp; three</button>
+          <button type="button" data-layout="grid4" class="choice">Four panels</button>
+          <button type="button" data-layout="fullbleed" class="choice">Full bleed</button>
+          <button type="button" data-layout="tilted" class="choice">Tilted snaps</button>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>4 · Colour grade</h2>
+        <div class="choices" id="grades">
+          <button type="button" data-grade="sunset" class="choice active">Sunset</button>
+          <button type="button" data-grade="neon" class="choice">Neon nights</button>
+          <button type="button" data-grade="vice" class="choice">Vice pink</button>
+          <button type="button" data-grade="midnight" class="choice">Midnight</button>
+        </div>
+        <div class="toggles">
+          <label><input id="fx-grain" type="checkbox" checked> Film grain</label>
+          <label><input id="fx-halftone" type="checkbox" checked> Halftone band</label>
+          <label><input id="fx-vignette" type="checkbox" checked> Vignette</label>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>5 · Export</h2>
+        <div class="choices" id="sizes">
+          <button type="button" data-size="1080x1080" class="choice active">1080 × 1080</button>
+          <button type="button" data-size="1080x1350" class="choice">1080 × 1350</button>
+          <button type="button" data-size="1920x1080" class="choice">1920 × 1080</button>
+        </div>
+        <div class="actions">
+          <button id="export" type="button" class="primary">Export PNG</button>
+          <button id="undo" type="button">Undo</button>
+          <button id="redo" type="button">Redo</button>
+        </div>
+        <p id="status" class="status" role="status"></p>
+      </section>
+    </aside>
+
+    <main class="stage-wrap">
+      <canvas id="stage" width="1080" height="1080" aria-label="The cover preview"></canvas>
+      <p class="stage-note">Live preview — click a panel to select it, drag to reposition its photo, scroll to zoom.</p>
+    </main>
   </div>
-  <div class="top-actions">
-    <button id="exportAll" type="button" class="primary">Export all 3 sizes</button>
-  </div>
-</header>
-
-<main class="studio">
-  <section class="controls" aria-label="Cover controls">
-    <h2>1 · Your photos</h2>
-    <p class="hint">Add up to 3 photos, or use the samples. Click a panel on the preview, then pick which photo fills it.</p>
-    <div class="photo-row" id="photoRow">
-      <label class="upload">+ Add photo
-        <input id="photoInput" type="file" accept="image/*" multiple>
-      </label>
-      <button type="button" class="thumb selected" data-sample="boulevard">Sample · Boulevard</button>
-      <button type="button" class="thumb" data-sample="pier">Sample · Pier</button>
-    </div>
-    <p class="hint" id="photoStatus">2 sample photos loaded. Selected panel: hero.</p>
-
-    <h2>2 · Layout &amp; grade</h2>
-    <label class="field">Layout
-      <select id="layout">
-        <option value="hero3">Hero + three panels</option>
-        <option value="grid4">Four corners</option>
-        <option value="fullbleed">Full-bleed hero</option>
-        <option value="tilted">Tilted snapshots</option>
-        <option value="nine">Nine-panel grid</option>
-        <option value="strip">Hero strip</option>
-      </select>
-    </label>
-    <div class="grade-row" id="gradeRow" role="group" aria-label="Colour grade">
-      <button type="button" data-grade="sunset" class="grade selected" style="--g1:#ff9a3c;--g2:#ff2e88">Sunset</button>
-      <button type="button" data-grade="neon" class="grade" style="--g1:#00e5ff;--g2:#ff2e88">Neon Night</button>
-      <button type="button" data-grade="gold" class="grade" style="--g1:#ffd166;--g2:#ef476f">Palm Gold</button>
-      <button type="button" data-grade="teal" class="grade" style="--g1:#06d6a0;--g2:#073b4c">Teal Noir</button>
-      <button type="button" data-grade="pop" class="grade" style="--g1:#ffbe0b;--g2:#8338ec">Pop Ink</button>
-    </div>
-    <label class="field">Grade strength <span id="gradeVal">70%</span>
-      <input id="gradeStrength" type="range" min="0" max="100" value="70">
-    </label>
-
-    <h2>3 · Caption &amp; badge</h2>
-    <label class="field">Title
-      <input id="title" type="text" maxlength="24" value="NEON SHORE">
-    </label>
-    <label class="field">Subtitle (script)
-      <input id="subtitle" type="text" maxlength="40" value="vice city nights">
-    </label>
-    <label class="field">Badge ribbon
-      <input id="badge" type="text" maxlength="18" value="EST. 2026">
-    </label>
-    <label class="field">Heat meter
-      <select id="stars">
-        <option value="5">★★★★★</option>
-        <option value="4" selected>★★★★☆</option>
-        <option value="3">★★★☆☆</option>
-      </select>
-    </label>
-
-    <h2>4 · Selected panel</h2>
-    <label class="field">Zoom <span id="zoomVal">100%</span>
-      <input id="zoom" type="range" min="100" max="300" value="100">
-    </label>
-    <label class="field">Pan X <span id="panXVal">0</span>
-      <input id="panX" type="range" min="-100" max="100" value="0">
-    </label>
-    <label class="field">Pan Y <span id="panYVal">0</span>
-      <input id="panY" type="range" min="-100" max="100" value="0">
-    </label>
-    <div class="row">
-      <button id="fillAll" type="button">Fill all panels with this photo</button>
-      <button id="shuffle" type="button">Shuffle layout</button>
-    </div>
-
-    <h2>5 · Export PNG</h2>
-    <div class="export-row">
-      <button type="button" data-size="1080x1080">1080 × 1080</button>
-      <button type="button" data-size="1080x1350">1080 × 1350</button>
-      <button type="button" data-size="1920x1080">1920 × 1080</button>
-    </div>
-    <p id="status" role="status">Ready. Pick a layout, then export.</p>
-    <p class="fine">Original art only — no Rockstar Games logo, artwork or font. Fonts: Anton, Bebas Neue &amp; Pacifico under the SIL Open Font License (see fonts/OFL-*.txt). Sample photos were AI-made for make.fun, free to use.</p>
-  </section>
-
-  <section class="preview" aria-label="Live cover preview">
-    <canvas id="cover" width="1080" height="1080" aria-label="Live cover preview — click a panel to select it"></canvas>
-    <p class="hint">Live preview — click any panel to select it, drag it to pan, scroll to zoom.</p>
-  </section>
-</main>
+</div>
 <script type="module" src="./src/main.js"></script>
 </body>
 </html>

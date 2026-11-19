@@ -1,48 +1,31 @@
-// Fixed scenes for screenshots, driven by ?shot=… in the URL.
-// ?shot=editor shows the editor with a sample photo loaded (the default view).
-// ?shot=cover shows the exported cover alone, full frame, at the requested
-// size: ?shot=cover&size=1920x1080 (default), 1080x1350 or 1080x1080.
-// window.__shotReady is set once the scene has painted, so a screenshot
-// taken after it is stable.
-import { renderCoverArt } from './cover.js';
-
-function paintWhenReady(done) {
-  requestAnimationFrame(() => requestAnimationFrame(done));
-}
-
-export async function runShot(shot, query, app) {
-  const { state, photos, loadSample, drawPreview } = app;
-  const photo = query.get('photo') ?? 'boulevard';
-  const caption = query.get('caption') ?? 'NEON SHORE';
-  const subtitle = query.get('subtitle') ?? 'vice city nights';
-  const layout = query.get('layout') ?? state.layout;
-  const grade = query.get('grade') ?? state.grade;
-  state.title = caption;
-  state.subtitle = subtitle;
-  state.layout = layout;
-  state.grade = grade;
-  const layoutSel = document.getElementById('layout');
-  if (layoutSel) layoutSel.value = layout;
-  const titleInput = document.getElementById('title');
-  if (titleInput) titleInput.value = caption;
-
-  await loadSample(photo, 0);
-  if (photo === 'boulevard') await loadSample('pier', 1);
-  else await loadSample('boulevard', 1);
-  state.panels.forEach((p, i) => { p.photo = i % 2; });
-  await document.fonts.ready;
-
-  if (shot === 'cover') {
-    const [w, h] = (query.get('size') ?? '1920x1080').split('x').map(Number);
-    const canvas = document.getElementById('cover');
-    canvas.width = w;
-    canvas.height = h;
-    document.body.classList.add('shot-cover');
-    renderCoverArt(canvas.getContext('2d'), w, h, state, photos);
-    paintWhenReady(() => { window.__shotReady = true; });
-    return;
+// Fixed scenes for screenshots: ?shot=editor shows the page with sample photos loaded;
+// ?shot=cover shows the cover alone, full frame. `photo` picks the hero sample,
+// `caption` / `subtitle` the words, `layout` and `grade` the look.
+// window.__shotReady is set once the scene has painted, so a screenshot tool knows
+// the frame is final.
+export async function runShot(shot, query, api) {
+  const scene = {
+    shot,
+    photo: query.get('photo') ?? 'pier',
+    caption: query.get('caption') ?? 'Pier Pressure',
+    subtitle: query.get('subtitle') ?? 'golden hour heist',
+    layout: query.get('layout') ?? 'hero',
+    grade: query.get('grade') ?? 'sunset',
+  };
+  await api.setup(scene);
+  if (document.fonts) {
+    try {
+      await Promise.all([
+        document.fonts.load('80px Anton'),
+        document.fonts.load('40px Pacifico'),
+        document.fonts.load('30px "Bebas Neue"'),
+      ]);
+    } catch {
+      // Fallbacks still draw; the shot must not hang on a font.
+    }
+    await document.fonts.ready;
   }
-  // Editor scene: the normal page, photo loaded, preview painted.
-  drawPreview();
-  paintWhenReady(() => { window.__shotReady = true; });
+  api.redraw();
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  window.__shotReady = true;
 }
